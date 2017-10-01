@@ -11,6 +11,7 @@ public class UserSession {
     }
     private int id;
     private String username;
+    private String password;
     private boolean isLogedIn;
 
     public int getId() {
@@ -35,5 +36,13 @@ public class UserSession {
 
     public void setLogedIn(boolean logedIn) {
         isLogedIn = logedIn;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

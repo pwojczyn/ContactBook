@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
     @FXML
-    TextField loginTab, signupTab, textLogin, textRejestracja;
+    TextField textLogin, textRejestracja;
 
     @FXML
     PasswordField textPassword, textPasswordR, textPasswordRSec;
@@ -27,15 +27,10 @@ public class LoginController implements Initializable {
     @FXML
     Button buttonLogin, buttonR;
 
-    @FXML
-    CheckBox rememberCheckBox;
-
 
     private UserSession userSession = UserSession.getInstance();
     private UserDao userDao = new UserDaoImpl();
 
-    private String rememberLogin;
-    private String rememberPassword;
 
     private String login;
     private String password;
@@ -43,7 +38,13 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("ZApamietany: "+rememberLogin+" i haslo: "+rememberPassword);
+        if (userSession.getUsername() != null || userSession.getPassword() != null) {
+            login = userSession.getUsername();
+            textLogin.setText(login);
+            password = userSession.getPassword();
+            textPassword.setText(password);
+        }
+
         buttonLogin.setOnMouseClicked(e -> tryLogin());
         buttonR.setOnMouseClicked(e -> tryRegister());
 
@@ -55,11 +56,11 @@ public class LoginController implements Initializable {
         String password = textPasswordR.getText();
 
         if (!checkRegisterData()) {
-        return;
+            return;
         }
-        if(userDao.register(login,password)){
+        if (userDao.register(login, password)) {
             Utils.createSimpleDialog("Rejestracja", "", "Zarejestrowałeś się poprawnie");
-        }else{
+        } else {
             Utils.createSimpleDialog("Rejestracja", "", "Login jest już zajęty");
         }
     }
@@ -88,28 +89,10 @@ public class LoginController implements Initializable {
     }
 
     private boolean checkLoginData() {
-        if (rememberCheckBox.isSelected()){
-            // zapamietac ustawienia
-            rememberLogin = textLogin.getText();
-            rememberPassword = textPassword.getText();
-            login = textLogin.getText();
-            password = textPassword.getText();
-        }else{
 
-            login = textLogin.getText();
-            password = textPassword.getText();
-        }
-//        System.out.println("Login "+rememberLogin);
-//        if (!rememberLogin.isEmpty()){
-//            login=rememberLogin;
-//        }else   {
-//            login = textLogin.getText();
-//        }
-//        if (!rememberPassword.isEmpty()){
-//            password=rememberPassword;
-//        }else{
-//            password = textPassword.getText();
-//        }
+
+        login = textLogin.getText();
+        password = textPassword.getText();
 
 
         if (login.isEmpty() || password.isEmpty()) {
@@ -123,15 +106,13 @@ public class LoginController implements Initializable {
 
 
         checkLoginData();
-        //System.out.println("ZApamietany: "+rememberLogin+" i haslo: "+rememberPassword);
         if (!checkLoginData()) {
             return;
         }
 
         if (userDao.login(login, password)) {
-            rememberLogin = login;
-            rememberPassword = password;
             userSession.setUsername(login);
+            userSession.setPassword(password);
             userSession.setLogedIn(true);
             try {
                 Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("mainView.fxml"));

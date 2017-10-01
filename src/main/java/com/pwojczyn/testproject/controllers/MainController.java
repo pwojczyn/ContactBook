@@ -21,26 +21,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainController implements Initializable{
+public class MainController implements Initializable {
 
     @FXML
     ListView<String> listContacts;
-@FXML
-    Button buttonLogout, newButtonContact,buttonEditContact, buttonEraseContact;
-@FXML
+    @FXML
+    Button buttonLogout, newButtonContact, buttonEditContact, buttonEraseContact;
+    @FXML
     TextField textName, textNumber, newContact, newNumber;
 
 
+    private UserSession session = UserSession.getInstance();
+    private ContactDaoImpl contactDao = new ContactDaoImpl();
 
-
-private UserSession session = UserSession.getInstance();
-private ContactDaoImpl contactDao = new ContactDaoImpl();
-
-private ObservableList contactsItems;
+    private ObservableList contactsItems;
 
     public void initialize(URL location, ResourceBundle resources) {
-        // buttonHello.setOnMouseClicked(s -> System.out.println("Hello!"));
-       // MysqlConnector.getInstance();
+
         textName.setEditable(false);
         textNumber.setEditable(false);
 
@@ -62,10 +59,9 @@ private ObservableList contactsItems;
 
         updateAction();
 
-     }
+    }
 
     private void eraseConatct() {
-        //System.out.println("usuwanie konatkt"+listContacts.getSelectionModel().getSelectedItem());
         contactDao.removeContact(listContacts.getSelectionModel().getSelectedItem());
         loadContacts();
     }
@@ -73,9 +69,8 @@ private ObservableList contactsItems;
     private void addNewContact() {
         if (newContact.getText().isEmpty() || newNumber.getText().isEmpty()) {
             Utils.createSimpleDialog("Dodawanie kontaktu", "", "Pola nie mogą być puste");
-        }else
-        {
-            contactDao.addContact(newContact.getText(),newNumber.getText());
+        } else {
+            contactDao.addContact(newContact.getText(), newNumber.getText());
             loadContacts();
         }
 
@@ -83,12 +78,12 @@ private ObservableList contactsItems;
 
     private void updateAction() {
         textName.setOnMouseClicked(e -> {
-            if (e.getClickCount() >= 2){
-                 textName.setEditable(true);
+            if (e.getClickCount() >= 2) {
+                textName.setEditable(true);
             }
         });
         textNumber.setOnMouseClicked(e -> {
-            if (e.getClickCount() >= 2){
+            if (e.getClickCount() >= 2) {
                 textNumber.setEditable(true);
             }
         });
@@ -96,9 +91,9 @@ private ObservableList contactsItems;
         textName.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-                if (!t1){
+                if (!t1) {
 
-                    contactDao.editContact(textName.getText(),textNumber.getText(), listContacts.getSelectionModel().getSelectedItem());
+                    contactDao.editContact(textName.getText(), textNumber.getText(), listContacts.getSelectionModel().getSelectedItem());
                     loadContacts();
                     textName.setEditable(false);
                 }
@@ -107,7 +102,7 @@ private ObservableList contactsItems;
         textNumber.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-                contactDao.editContact(textName.getText(),textNumber.getText(), listContacts.getSelectionModel().getSelectedItem());
+                contactDao.editContact(textName.getText(), textNumber.getText(), listContacts.getSelectionModel().getSelectedItem());
                 loadContacts();
                 textNumber.setEditable(false);
             }
@@ -117,10 +112,10 @@ private ObservableList contactsItems;
 
     private void logout() {
         session.setLogedIn(false);
-        session.setUsername(null);
+
         session.setId(0);
         Stage stage = (Stage) buttonLogout.getScene().getWindow();
-         try {
+        try {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("loginView.fxml"));
             stage.setScene(new Scene(root, 600, 400));
         } catch (IOException e) {
@@ -133,18 +128,6 @@ private ObservableList contactsItems;
         contactsItems = FXCollections.observableArrayList(contactDao.getAllContactsNames(session.getUsername()));
         listContacts.setItems(contactsItems);
 
-//        if(session.isLogedIn()){
-//            System.out.println("Uzytkownik zalogowany");
-//            //test
-//            usernameView.setText("test");
-//
-//            // add list of contact of user
-//
-//            ObservableList<String> items = FXCollections.observableArrayList(contactDao.getAllContactsNames(session.getUsername()));
-//            listContacts.setItems(items);
-//
-//
-//        }
     }
 
 

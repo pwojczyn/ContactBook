@@ -26,7 +26,7 @@
                               <Font size="22.0" />
                            </font>
                         </Label>
-                        <CheckBox fx:id="rememberCheckBox" layoutX="192.0" layoutY="189.0" mnemonicParsing="false" text="Czy zapamiętać ustawienia" />
+
                      </children>
                   </AnchorPane>
             </content>
